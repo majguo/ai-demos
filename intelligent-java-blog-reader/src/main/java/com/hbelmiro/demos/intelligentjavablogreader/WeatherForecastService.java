@@ -2,15 +2,21 @@ package com.hbelmiro.demos.intelligentjavablogreader;
 
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
+import dev.langchain4j.service.V;
 import io.quarkiverse.langchain4j.RegisterAiService;
 
 @RegisterAiService
 public interface WeatherForecastService {
 
-    @SystemMessage("You are an assistant that forecasts the weather of the city.")
-    @UserMessage("""
-                Here's the city, please:
-                {city}
-            """)
-    String forecast(String city);
+    @SystemMessage("""
+        Today is {{today}}.
+        You will act as a meteorological expert who helps analyze and forecast weather.
+        Given the following historical weather (in CSV format with header) of {{city}} over an entire year, please answer the questions and make predictions.
+        Don't use any external data.
+
+        {{weatherHistory}}
+        """
+    )
+    @UserMessage("{{question}}")
+    String ask(@V("today") String today, @V("city") String city, @V("weatherHistory") String weatherHistory, @V("question") String question);
 }
